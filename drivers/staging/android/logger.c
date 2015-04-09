@@ -30,14 +30,11 @@
 #include <linux/vmalloc.h>
 #include <linux/aio.h>
 #include "logger.h"
-#include "logger_interface.h"
 
 #include <asm/ioctls.h>
 #include <linux/sec_debug.h>
+#include <linux/sec_bsp.h>
 
-#ifndef CONFIG_LOGCAT_SIZE
-#define CONFIG_LOGCAT_SIZE 256
-#endif
 
 /**
  * struct logger_log - represents a specific log, such as 'main' or 'radio'
@@ -424,12 +421,6 @@ static void do_write_log(struct logger_log *log, const void *buf, size_t count)
 {
 	size_t len;
 
-	// if logger mode is disabled, terminate instantly
-	if (logger_mode == 0)
-	{
-		return;
-	} 
-
 	len = min(count, log->size - log->w_off);
 	memcpy(log->buffer + log->w_off, buf, len);
 
@@ -452,12 +443,6 @@ static ssize_t do_write_log_from_user(struct logger_log *log,
 				      const void __user *buf, size_t count)
 {
 	size_t len;
-
-	// if logger mode is disabled, terminate instantly
-	if (logger_mode == 0)
-	{
-		return 0;
-	} 
 
 	len = min(count, log->size - log->w_off);
 	if (len && copy_from_user(log->buffer + log->w_off, buf, len))
@@ -484,9 +469,15 @@ static ssize_t do_write_log_from_user(struct logger_log *log,
 				    log->buffer[logger_offset \
 						(log, log->w_off + i)];
 			tmp[i] = '\0';
+
 			printk(KERN_INFO"%s\n", tmp);
 #ifdef CONFIG_SEC_DEBUG_TSP_LOG
 			sec_debug_tsp_log("%s\n", tmp);
+#endif
+#ifdef CONFIG_SEC_BSP
+			if (strncmp(tmp, "!@Boot", 6) == 0) {
+				sec_boot_stat_add(tmp);
+			}
 #endif
 		}
 	}
@@ -883,24 +874,24 @@ static int __init logger_init(void)
 {
 	int ret;
 
-	ret = create_log(LOGGER_LOG_MAIN, CONFIG_LOGCAT_SIZE*1024);
+	ret = create_log(LOGGER_LOG_MAIN, 2048*1024);
 	if (unlikely(ret))
 		goto out;
 
-	ret = create_log(LOGGER_LOG_EVENTS, CONFIG_LOGCAT_SIZE*1024);
+	ret = create_log(LOGGER_LOG_EVENTS, 256*1024);
 	if (unlikely(ret))
 		goto out;
 
-	ret = create_log(LOGGER_LOG_RADIO, CONFIG_LOGCAT_SIZE*1024);
+	ret = create_log(LOGGER_LOG_RADIO, 2048*1024);
 	if (unlikely(ret))
 		goto out;
 
-	ret = create_log(LOGGER_LOG_SYSTEM, CONFIG_LOGCAT_SIZE*1024);
+	ret = create_log(LOGGER_LOG_SYSTEM, 256*1024);
 	if (unlikely(ret))
 		goto out;
 
 #if !defined(CONFIG_SAMSUNG_PRODUCT_SHIP)
-	ret = create_log(LOGGER_LOG_SF, CONFIG_LOGCAT_SIZE*1024);
+	ret = create_log(LOGGER_LOG_SF, 256*1024);
 	if (unlikely(ret))
 		goto out;
 #endif

@@ -50,8 +50,7 @@ static gpu_dvfs_info gpu_dvfs_table_default[] = {
 	{420, 1025000, 0, 80,  99, 1, 0, 667000, 200000,  900000, 1800000},
 	{350, 1025000, 0, 80,  90, 1, 0, 543000, 160000,       0, CPU_MAX},
 	{266, 1000000, 0, 80,  90, 3, 0, 413000, 133000,       0, CPU_MAX},
-	{160, 1000000, 0, 80,  90, 1, 0, 272000, 133000,       0, CPU_MAX},
-	{100, 1000000, 0,  0,  90, 1, 0, 272000, 133000,       0, CPU_MAX},
+	{160, 1000000, 0,  0,  90, 1, 0, 272000, 133000,       0, CPU_MAX},
 };
 
 static int available_max_clock[] = {GPU_L2, GPU_L2, GPU_L0, GPU_L0, GPU_L0};
@@ -59,7 +58,7 @@ static int available_max_clock[] = {GPU_L2, GPU_L2, GPU_L0, GPU_L0, GPU_L0};
 static gpu_attribute gpu_config_attributes[] = {
 	{GPU_MAX_CLOCK, 700},
 	{GPU_MAX_CLOCK_LIMIT, 600},
-	{GPU_MIN_CLOCK, 100},
+	{GPU_MIN_CLOCK, 160},
 	{GPU_DVFS_START_CLOCK, 266},
 	{GPU_DVFS_BL_CONFIG_CLOCK, 266},
 	{GPU_GOVERNOR_START_CLOCK_DEFAULT, 266},
@@ -71,7 +70,7 @@ static gpu_attribute gpu_config_attributes[] = {
 	{GPU_GOVERNOR_TABLE_SIZE_DEFAULT, GPU_DVFS_TABLE_LIST_SIZE(gpu_dvfs_table_default)},
 	{GPU_GOVERNOR_TABLE_SIZE_STATIC, GPU_DVFS_TABLE_LIST_SIZE(gpu_dvfs_table_default)},
 	{GPU_GOVERNOR_TABLE_SIZE_BOOSTER, GPU_DVFS_TABLE_LIST_SIZE(gpu_dvfs_table_default)},
-	{GPU_DEFAULT_VOLTAGE, 912500},
+	{GPU_DEFAULT_VOLTAGE, 937500},
 	{GPU_COLD_MINIMUM_VOL, 0},
 	{GPU_VOLTAGE_OFFSET_MARGIN, 37500},
 	{GPU_TMU_CONTROL, 1},
@@ -81,7 +80,7 @@ static gpu_attribute gpu_config_attributes[] = {
 	{GPU_TEMP_THROTTLING4, 160},
 	{GPU_TEMP_TRIPPING, 160},
 	{GPU_BOOST_MIN_LOCK, 0},
-	{GPU_BOOST_EGL_MIN_LOCK, 0},
+	{GPU_BOOST_EGL_MIN_LOCK, 1300000},
 	{GPU_POWER_COEFF, 46}, /* all core on param */
 	{GPU_DVFS_TIME_INTERVAL, 5},
 	{GPU_DEFAULT_WAKEUP_LOCK, 1},
